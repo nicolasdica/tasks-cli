@@ -13,7 +13,7 @@ pub struct Task {
     pub deleted: bool,
 }
 
-pub fn add_task() {
+pub fn add_task() -> Result<(), Box<dyn std::error::Error>> {
     let mut name = String::new();
     io::stdin().read_line(&mut name).expect("Failed to read line");
 
@@ -25,94 +25,69 @@ pub fn add_task() {
         deleted: false,
     };
 
-    let json_data = match fs::read_to_string("tasks.json") {
-        Ok(data) => data,
-        Err(e) => {
-            println!("Error reading file tasks.json: {}", e);
-            return;
-        }
-    };
-
-    let mut tasks: Vec<Task> = serde_json::from_str(&json_data).unwrap();
+    let json_data = fs::read_to_string("tasks.json")?;
+    let mut tasks: Vec<Task> = serde_json::from_str(&json_data)?;
     tasks.push(new_task);
 
-    let updated_json = serde_json::to_string_pretty(&tasks).unwrap();
-    fs::write("tasks.json", format!("{}\n", updated_json)).unwrap();
+    let updated_json = serde_json::to_string_pretty(&tasks)?;
+    fs::write("tasks.json", format!("{}\n", updated_json))?;
+
+    Ok(())
 }
 
-pub fn complete_task() {
-    list_tasks();
+pub fn complete_task() -> Result<(), Box<dyn std::error::Error>> {
+    let _ = list_tasks();
 
     println!("Which task do you want to mark as completed?");
     let mut task_index = String::new();
     io::stdin().read_line(&mut task_index).expect("Failed to read line");
 
-    let index: usize = match task_index.trim().parse() {
-        Ok(num) => num,
-        Err(_) => {
-            println!("Invalid input! Please enter a valid number.");
-            return;
-        }
-    };
+    let index: usize = task_index.trim().parse()?;
 
-    let json_data = match fs::read_to_string("tasks.json") {
-        Ok(data) => data,
-        Err(e) => {
-            println!("Error reading file tasks.json: {}", e);
-            return;
-        }
-    };
-    let mut tasks: Vec<Task> = serde_json::from_str(&json_data).unwrap();
+    let json_data = fs::read_to_string("tasks.json")?;
+    let mut tasks: Vec<Task> = serde_json::from_str(&json_data)?;
 
     if index >= tasks.len() {
         println!("Invalid task {}", index);
-        return;
+        return Ok(())
     }
 
     tasks[index].completed = true;
 
-    let updated_json = serde_json::to_string_pretty(&tasks).unwrap();
-    fs::write("tasks.json", format!("{}\n", updated_json)).unwrap();
+    let updated_json = serde_json::to_string_pretty(&tasks)?;
+    fs::write("tasks.json", format!("{}\n", updated_json))?;
+
+    Ok(())
 }
 
-pub fn delete_task() {
-    list_tasks();
+pub fn delete_task() -> Result<(), Box<dyn std::error::Error>> {
+    let _ = list_tasks();
 
     println!("Which task do you want to delete?");
     let mut task_index = String::new();
     io::stdin().read_line(&mut task_index).expect("Failed to read line");
 
-    let index: usize = match task_index.trim().parse() {
-        Ok(num) => num,
-        Err(_) => {
-            println!("Invalid input! Please enter a valid number.");
-            return;
-        }
-    };
+    let index: usize = task_index.trim().parse()?;
 
-    let json_data = match fs::read_to_string("tasks.json") {
-        Ok(data) => data,
-        Err(e) => {
-            println!("Error reading file tasks.json: {}", e);
-            return;
-        }
-    };
-    let mut tasks: Vec<Task> = serde_json::from_str(&json_data).unwrap();
+    let json_data = fs::read_to_string("tasks.json")?;
+    let mut tasks: Vec<Task> = serde_json::from_str(&json_data)?;
 
     if index >= tasks.len() {
         println!("Invalid task {}", index);
-        return;
+        return Ok(())
     }
 
     tasks[index].deleted = true;
 
-    let updated_json = serde_json::to_string_pretty(&tasks).unwrap();
-    fs::write("tasks.json", format!("{}\n", updated_json)).unwrap();
+    let updated_json = serde_json::to_string_pretty(&tasks)?;
+    fs::write("tasks.json", format!("{}\n", updated_json))?;
+
+    Ok(())
 }
 
-pub fn list_tasks() {
-    let json_data = fs::read_to_string("tasks.json").unwrap();
-    let tasks: Vec<Task> = serde_json::from_str(&json_data).unwrap();
+pub fn list_tasks() -> Result<(), Box<dyn std::error::Error>> {
+    let json_data = fs::read_to_string("tasks.json")?;
+    let tasks: Vec<Task> = serde_json::from_str(&json_data)?;
 
     for (index, task) in tasks.iter().enumerate() {
         println!("\nTask {}", index);
@@ -123,4 +98,6 @@ pub fn list_tasks() {
 
         thread::sleep(time::Duration::from_secs(1));
     }
+
+    Ok(())
 }
