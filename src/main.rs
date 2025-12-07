@@ -45,5 +45,7 @@ fn main() {
                 println!("Invalid option! Please try again.")
             },
         };
+
+        thread::sleep(time::Duration::from_secs(1));
     }
 }

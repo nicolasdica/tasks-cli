@@ -57,6 +57,8 @@ pub fn complete_task() -> Result<(), Box<dyn std::error::Error>> {
     let updated_json = serde_json::to_string_pretty(&tasks)?;
     fs::write("tasks.json", format!("{}\n", updated_json))?;
 
+    println!("Task masked as complete.");
+
     Ok(())
 }
 
@@ -81,6 +83,8 @@ pub fn delete_task() -> Result<(), Box<dyn std::error::Error>> {
 
     let updated_json = serde_json::to_string_pretty(&tasks)?;
     fs::write("tasks.json", format!("{}\n", updated_json))?;
+
+    println!("Task deleted.");
 
     Ok(())
 }
