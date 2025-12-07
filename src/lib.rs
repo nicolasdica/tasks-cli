@@ -94,11 +94,11 @@ pub fn list_tasks() -> Result<(), Box<dyn std::error::Error>> {
     let tasks: Vec<Task> = serde_json::from_str(&json_data)?;
 
     for (index, task) in tasks.iter().enumerate() {
-        println!("\nTask {}", index);
+        println!("\n📝 {}", index + 1);
         println!("Name: {}", task.name);
-        println!("Date: {:?}", task.date);
-        println!("Person: {}", task.person);
-        println!("Completed: {}\n", task.completed);
+        println!("Date: {}", task.date.format("%b %d, %Y %H:%M"));
+        println!("Crated by: {}", task.person);
+        println!("Status: {}\n", if task.completed { "✅ Completed" } else { "⏳ Pending" });
 
         thread::sleep(time::Duration::from_secs(1));
     }
