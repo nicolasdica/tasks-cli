@@ -44,20 +44,25 @@ pub fn complete_task() -> Result<(), Box<dyn std::error::Error>> {
 
     let index: usize = task_index.trim().parse()?;
 
-    let json_data = fs::read_to_string("tasks.json")?;
-    let mut tasks: Vec<Task> = serde_json::from_str(&json_data)?;
-
-    if index >= tasks.len() {
-        println!("Invalid task {}", index);
-        return Ok(())
-    }
-
-    tasks[index].completed = true;
-
-    let updated_json = serde_json::to_string_pretty(&tasks)?;
-    fs::write("tasks.json", format!("{}\n", updated_json))?;
+    let _ = mark_task_completed("tasks.json", index -1)?;
 
     println!("Task masked as complete.");
+
+    Ok(())
+}
+
+pub fn mark_task_completed(file_path: &str, task_index: usize) -> Result<(), Box<dyn std::error::Error>> {
+    let json_data = fs::read_to_string(file_path)?;
+    let mut tasks: Vec<Task> = serde_json::from_str(&json_data)?;
+
+    if task_index >= tasks.len() {
+        return Err(format!("Invalid task index: {}", task_index).into());
+    }
+
+    tasks[task_index].completed = true;
+
+    let updated_json = serde_json::to_string_pretty(&tasks)?;
+    fs::write(file_path, format!("{}\n", updated_json))?;
 
     Ok(())
 }
@@ -71,20 +76,25 @@ pub fn delete_task() -> Result<(), Box<dyn std::error::Error>> {
 
     let index: usize = task_index.trim().parse()?;
 
-    let json_data = fs::read_to_string("tasks.json")?;
-    let mut tasks: Vec<Task> = serde_json::from_str(&json_data)?;
-
-    if index >= tasks.len() {
-        println!("Invalid task {}", index);
-        return Ok(())
-    }
-
-    tasks[index].deleted = true;
-
-    let updated_json = serde_json::to_string_pretty(&tasks)?;
-    fs::write("tasks.json", format!("{}\n", updated_json))?;
+    mark_task_deleted("tasks.json", index - 1)?;
 
     println!("Task deleted.");
+
+    Ok(())
+}
+
+pub fn mark_task_deleted(file_path: &str, task_index: usize) -> Result<(), Box<dyn std::error::Error>> {
+    let json_data = fs::read_to_string(file_path)?;
+    let mut tasks: Vec<Task> = serde_json::from_str(&json_data)?;
+
+    if task_index >= tasks.len() {
+        return Err(format!("Invalid task index: {}", task_index).into());
+    }
+
+    tasks[task_index].deleted = true;
+
+    let updated_json = serde_json::to_string_pretty(&tasks)?;
+    fs::write(file_path, format!("{}\n", updated_json))?;
 
     Ok(())
 }
