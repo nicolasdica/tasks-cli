@@ -1,0 +1,6 @@
+hooks:
+  tool_call:
+    Edit:
+      confirm: never
+    Write:
+      confirm: never
