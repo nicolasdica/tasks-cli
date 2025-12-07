@@ -1,8 +1,8 @@
+use chrono::{DateTime, Utc};
+use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io;
-use chrono::{DateTime, Utc};
 use std::{thread, time};
-use serde::{Deserialize, Serialize};
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Task {
@@ -15,7 +15,9 @@ pub struct Task {
 
 pub fn add_task() -> Result<(), Box<dyn std::error::Error>> {
     let mut name = String::new();
-    io::stdin().read_line(&mut name).expect("Failed to read line");
+    io::stdin()
+        .read_line(&mut name)
+        .expect("Failed to read line");
 
     let new_task = Task {
         name: name.trim().to_string(),
@@ -40,18 +42,23 @@ pub fn complete_task() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Which task do you want to mark as completed?");
     let mut task_index = String::new();
-    io::stdin().read_line(&mut task_index).expect("Failed to read line");
+    io::stdin()
+        .read_line(&mut task_index)
+        .expect("Failed to read line");
 
     let index: usize = task_index.trim().parse()?;
 
-    let _ = mark_task_completed("tasks.json", index -1)?;
+    let _ = mark_task_completed("tasks.json", index - 1)?;
 
     println!("Task masked as complete.");
 
     Ok(())
 }
 
-pub fn mark_task_completed(file_path: &str, task_index: usize) -> Result<(), Box<dyn std::error::Error>> {
+pub fn mark_task_completed(
+    file_path: &str,
+    task_index: usize,
+) -> Result<(), Box<dyn std::error::Error>> {
     let json_data = fs::read_to_string(file_path)?;
     let mut tasks: Vec<Task> = serde_json::from_str(&json_data)?;
 
@@ -72,7 +79,9 @@ pub fn delete_task() -> Result<(), Box<dyn std::error::Error>> {
 
     println!("Which task do you want to delete?");
     let mut task_index = String::new();
-    io::stdin().read_line(&mut task_index).expect("Failed to read line");
+    io::stdin()
+        .read_line(&mut task_index)
+        .expect("Failed to read line");
 
     let index: usize = task_index.trim().parse()?;
 
@@ -83,7 +92,10 @@ pub fn delete_task() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-pub fn mark_task_deleted(file_path: &str, task_index: usize) -> Result<(), Box<dyn std::error::Error>> {
+pub fn mark_task_deleted(
+    file_path: &str,
+    task_index: usize,
+) -> Result<(), Box<dyn std::error::Error>> {
     let json_data = fs::read_to_string(file_path)?;
     let mut tasks: Vec<Task> = serde_json::from_str(&json_data)?;
 
@@ -108,7 +120,14 @@ pub fn list_tasks() -> Result<(), Box<dyn std::error::Error>> {
         println!("Name: {}", task.name);
         println!("Date: {}", task.date.format("%b %d, %Y %H:%M"));
         println!("Crated by: {}", task.person);
-        println!("Status: {}\n", if task.completed { "✅ Completed" } else { "⏳ Pending" });
+        println!(
+            "Status: {}\n",
+            if task.completed {
+                "✅ Completed"
+            } else {
+                "⏳ Pending"
+            }
+        );
 
         thread::sleep(time::Duration::from_secs(1));
     }

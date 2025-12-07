@@ -1,6 +1,6 @@
+use chrono::Utc;
 use std::fs;
 use tasks_cli::Task;
-use chrono::Utc;
 
 fn create_test_tasks_file(file_path: &str) -> Vec<Task> {
     let tasks = vec![
